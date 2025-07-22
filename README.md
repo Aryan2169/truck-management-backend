@@ -1,98 +1,126 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🚚 Truck Management Backend API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A NestJS-based backend API for managing trucks, drivers, clients, trips, and financial reports in a logistics system.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 📁 Modules
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Auth** — JWT-based login
+- **Users** — Role-based users (Admin, Staff, Viewer)
+- **Clients** — CRUD, view client trip history
+- **Drivers** — CRUD, assign drivers to trips
+- **Trucks** — CRUD, track availability & usage
+- **Trips** — Manage trips, associate trucks & drivers
+- **Reports** — Driver-wise, Truck-wise, Client-wise reports with filters
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+## 🛠️ Tech Stack
 
-## Compile and run the project
+- **Node.js** + **NestJS**
+- **PostgreSQL** (via Docker)
+- **TypeORM**
+- **JWT Auth**
+- **Docker**
+- **Postman / Swagger**
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
 
 ```bash
-# development
-$ npm run start
+git clone git@github.com:your-username/truck-management-backend.git
+cd truck-management-backend
 
-# watch mode
-$ npm run start:dev
 
-# production mode
-$ npm run start:prod
-```
+⚙️ Environment Setup
+2. Create .env File
+Create a .env file at the project root using this template:
 
-## Run tests
+⚠️ DO NOT commit your real .env to GitHub.
 
-```bash
-# unit tests
-$ npm run test
+.env.example
 
-# e2e tests
-$ npm run test:e2e
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=your_db_username
+DB_PASSWORD=your_db_password
+DB_DATABASE=your_db_name
 
-# test coverage
-$ npm run test:cov
-```
+# JWT Configuration
+JWT_SECRET=your_super_secret_key
+JWT_EXPIRES_IN=24h
 
-## Deployment
+# App Config
+PORT=3000
+NODE_ENV=development
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+# TypeORM
+TYPEORM_LOGGING=false
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+🐳 Docker Setup
+3. PostgreSQL via Docker (Option 1)
+Use this if you're not using docker-compose.
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+docker run --name truck-db \
+  -e POSTGRES_DB=your_db_name \
+  -e POSTGRES_USER=your_db_username \
+  -e POSTGRES_PASSWORD=your_db_password \
+  -p 5432:5432 \
+  -d postgres
 
-## Resources
 
-Check out a few resources that may come in handy when working with NestJS:
+Or Use docker-compose (Recommended)
+Create a file named docker-compose.yml:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+version: '3.8'
 
-## Support
+services:
+  postgres:
+    image: postgres
+    container_name: truck-db
+    restart: always
+    environment:
+      POSTGRES_USER: your_db_username
+      POSTGRES_PASSWORD: your_db_password
+      POSTGRES_DB: your_db_name
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+ # Enable better logging
+    command: ["postgres", "-c", "log_statement=all", "-c", "log_destination=stderr"]
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+  # Optional: pgAdmin for web-based database management
+  pgadmin:
+    image: dpage/pgadmin4:7
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGLADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - '5050:80'
+    depends_on:
+      - postgres
 
-## Stay in touch
+volumes:
+  postgres_data:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+  Run:
 
-## License
+  docker-compose up -d
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+📦 Install Dependencies
+
+  npm install
+
+🏃 Run the App
+
+  # Dev mode
+  npm run start:dev
+  API runs at: http://localhost:3000
