@@ -1,7 +1,7 @@
 // src/trucks/truck.service.ts
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { Truck } from './entities/truck.entity';
 import { Trip } from '../trips/entities/trips.entity';
 import { CreateTruckDto } from './dto/create-truck.dto';
@@ -39,6 +39,7 @@ export class TruckService {
   async findOne(id: string) {
     try {
       const truck = await this.truckRepo.findOne({ where: { id } });
+      console.log(truck)
       if (!truck) throw new NotFoundException('Truck not found');
       return truck;
     } catch (error) {
@@ -68,14 +69,30 @@ export class TruckService {
 
   }
 
-  async trackAvailability() {
+  async trackAvailability(startDate: string, endDate: string) {
     try {
-      return this.truckRepo.find({ select: ['id', 'numberPlate', 'status', 'isActive'] });
+      const qb = this.truckRepo
+        .createQueryBuilder('truck')
+        .leftJoin('truck.trips', 'trip')
+        .where('truck.isActive = true')
+        .andWhere(
+          new Brackets((qb) => {
+            qb.where('trip.id IS NULL') // No trips assigned
+              .orWhere(
+                'trip.startDate > :endDate OR trip.endDate < :startDate',
+                { startDate, endDate },
+              );
+          }),
+        )
+        .select(['truck.id', 'truck.numberPlate', 'truck.status', 'truck.isActive'])
+        .groupBy('truck.id');
+
+      return await qb.getMany();
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
-
   }
+
 
   async removeTruck(truckId: string) {
     try {
@@ -110,6 +127,22 @@ export class TruckService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async toggleActiveStatus(id: string) {
+    const truck = await this.truckRepo.findOne({ where: { id } });
+    if (!truck) {
+      throw new NotFoundException('Truck not found');
+    }
+
+    truck.isActive = !truck.isActive;
+    await this.truckRepo.save(truck);
+
+    return {
+      message: `Truck is now ${truck.isActive ? 'active' : 'inactive'}`,
+      truck,
+    };
+  }
+
 
 
 }

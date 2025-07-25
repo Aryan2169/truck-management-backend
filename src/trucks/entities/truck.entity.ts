@@ -1,5 +1,6 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../common/entities/base.entity';
+import { Trip } from 'src/trips/entities/trips.entity';
 
 @Entity('trucks')
 export class Truck extends BaseEntity {
@@ -26,4 +27,7 @@ export class Truck extends BaseEntity {
 
   @Column({ nullable: true })
   lastServicedAt: Date;
+
+  @OneToMany(() => Trip, (trip) => trip.truck)
+  trips: Trip[];
 }

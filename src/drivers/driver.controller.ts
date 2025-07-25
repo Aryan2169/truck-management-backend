@@ -8,6 +8,7 @@ import {
   Get,
   UseGuards,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { DriverService } from './driver.service';
 import { CreateDriverDto } from './dto/create-driver.dto';
@@ -23,12 +24,21 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('drivers')
 export class DriverController {
-  constructor(private readonly driverService: DriverService) {}
+  constructor(private readonly driverService: DriverService) { }
 
   @Post('add')
   @Roles(Role.Admin, Role.Staff)
   create(@Body() dto: CreateDriverDto) {
     return this.driverService.create(dto);
+  }
+
+   @Get('available')
+  @Roles(Role.Admin, Role.Staff)
+  getAvailableDrivers(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    return this.driverService.getAvailableDrivers(startDate, endDate);
   }
 
   @Get()
@@ -37,7 +47,7 @@ export class DriverController {
     return this.driverService.findAll();
   }
 
-  @Get(':id')
+  @Get('by-id/:id')
   @Roles(Role.Admin, Role.Staff, Role.Viewer)
   findOne(@Param('id') id: string) {
     return this.driverService.findOne(id);
@@ -57,7 +67,10 @@ export class DriverController {
 
   @Delete(':id')
   @Roles(Role.Admin)
-  removeDriver(@Param('id')id:string){
+  removeDriver(@Param('id') id: string) {
     return this.driverService.removeDriver(id);
   }
+
+ 
+
 }

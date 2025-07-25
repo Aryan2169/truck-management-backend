@@ -1,7 +1,7 @@
 // src/drivers/driver.service.ts
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { Driver } from './entities/drivers.entity';
 import { CreateDriverDto } from './dto/create-driver.dto';
 import { UpdateDriverDto } from './dto/update-driver.dto';
@@ -145,6 +145,30 @@ async assignToTrip(dto: AssignDriverDto) {
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
+}
+   async getAvailableDrivers(startDate: string, endDate: string) {
+  const qb = this.driverRepo
+    .createQueryBuilder('driver')
+    .leftJoin('driver.tripDrivers', 'td')
+    .leftJoin('td.trip', 'trip')
+    .where(
+      new Brackets((qb) => {
+        qb.where('trip.id IS NULL') // no trips assigned
+          .orWhere(
+            'trip.startDate > :endDate OR trip.endDate < :startDate',
+            { startDate, endDate },
+          );
+      }),
+    )
+    .select([
+      'driver.id',
+      'driver.name',
+      'driver.phone',
+      'driver.licenseNo',
+    ])
+    .groupBy('driver.id');
+
+  return await qb.getMany();
 }
 
 }

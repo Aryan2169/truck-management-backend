@@ -1,5 +1,5 @@
 // src/trucks/truck.controller.ts
-import { Controller, Post, Body, Patch, Param, Get, UseGuards, ParseIntPipe, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param, Get, UseGuards, ParseIntPipe, Delete, Query } from '@nestjs/common';
 import { TruckService } from './truck.service';
 import { CreateTruckDto } from './dto/create-truck.dto';
 import { UpdateTruckDto } from './dto/update-truck.dto';
@@ -14,34 +14,38 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('trucks')
 export class TruckController {
-  constructor(private readonly truckService: TruckService) {}
+  constructor(private readonly truckService: TruckService) { }
 
- @Post('add')
-  @Roles(Role.Admin,Role.Staff)
+  @Post('add')
+  @Roles(Role.Admin, Role.Staff)
   create(@Body() dto: CreateTruckDto) {
     return this.truckService.create(dto);
   }
 
   @Get('find-all')
-  @Roles(Role.Admin,Role.Staff,Role.Viewer)
+  @Roles(Role.Admin, Role.Staff, Role.Viewer)
   findAll() {
     return this.truckService.findAll();
   }
 
   @Get('availability')
-  @Roles(Role.Admin,Role.Staff,Role.Viewer)
-  checkStatus() {
-    return this.truckService.trackAvailability();
+  @Roles(Role.Admin, Role.Staff, Role.Viewer)
+  checkAvailability(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    return this.truckService.trackAvailability(startDate, endDate);
   }
 
-  @Get(':id')
-  @Roles(Role.Admin,Role.Staff,Role.Viewer)
+
+  @Get('by-id/:id')
+  @Roles(Role.Admin, Role.Staff, Role.Viewer)
   findOne(@Param('id') id: string) {
     return this.truckService.findOne(id);
   }
 
   @Patch('update/:id')
-  @Roles(Role.Admin,Role.Staff)
+  @Roles(Role.Admin, Role.Staff)
   update(@Param('id') id: string, @Body() dto: UpdateTruckDto) {
     return this.truckService.update(id, dto);
   }
@@ -54,7 +58,15 @@ export class TruckController {
 
   @Delete(':id')
   @Roles(Role.Admin)
-  removeTruck(@Param('id') id:string){
-    return  this.truckService.removeTruck(id);
+  removeTruck(@Param('id') id: string) {
+    return this.truckService.removeTruck(id);
   }
+
+  @Patch(':id/toggle-status')
+  @Roles(Role.Admin, Role.Staff)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async toggleStatus(@Param('id') id: string) {
+    return this.truckService.toggleActiveStatus(id);
+  }
+
 }
